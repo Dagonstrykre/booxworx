@@ -1,0 +1,41 @@
+# Import necessary modules
+import ipaddress
+
+# Define local and remote IP address lists
+local_ips = ['10.1.1.1', '10.2.2.2', '10.3.3.3']
+remote_ips = ['20.1.1.1', '20.2.2.2', '20.3.3.3']
+
+# Define BGP configuration template
+bgp_config_template = """
+router bgp {}
+ bgp router-id {}
+ neighbor {} remote-as {}
+ neighbor {} description {}
+ neighbor {} update-source {}
+"""
+
+# Define BGP settings
+bgp_as_number = 65000
+bgp_router_id = '1.1.1.1'
+bgp_update_source = 'loopback0'
+
+# Generate BGP configuration for each remote IP address
+for i, remote_ip in enumerate(remote_ips):
+    local_ip = local_ips[i]
+    remote_as = 65001 + i
+    description = f'Peer {i+1}'
+
+    # Create IP address objects from the string representations
+    local_ip_obj = ipaddress.IPv4Address(local_ip)
+    remote_ip_obj = ipaddress.IPv4Address(remote_ip)
+
+    # Use the IP address objects to determine the network address
+    local_network = ipaddress.IPv4Network(f'{local_ip_obj}/{local_ip_obj.max_prefixlen}')
+    remote_network = ipaddress.IPv4Network(f'{remote_ip_obj}/{remote_ip_obj.max_prefixlen}')
+
+    # Generate BGP configuration for the current remote IP address
+    bgp_config = bgp_config_template.format(bgp_as_number, bgp_router_id, remote_ip, remote_as, remote_ip, description, bgp_update_source)
+
+    # Print the BGP configuration for the current remote IP address
+    print(f'Config for peer {i+1} ({remote_ip}):')
+    print(bgp_config)

@@ -1,0 +1,22 @@
+def sort_routes(routes):
+    sorted_routes = sorted(routes, key=lambda x: x['preference'])
+    return sorted_routes
+
+def generate_adtran_config(sorted_routes):
+    config = 'configure terminal\n'
+    for route in sorted_routes:
+        config += f'ip route {route["network"]} {route["mask"]} {route["next_hop"]} {route["preference"]}\n'
+    config += 'end\n'
+    return config
+
+# Example usage
+routes = [
+    {"network": "10.0.0.0", "mask": "255.255.255.0", "next_hop": "192.168.1.1", "preference": 100},
+    {"network": "20.0.0.0", "mask": "255.255.0.0", "next_hop": "192.168.2.1", "preference": 200},
+    {"network": "30.0.0.0", "mask": "255.0.0.0", "next_hop": "192.168.3.1", "preference": 50},
+]
+
+sorted_routes = sort_routes(routes)
+adtran_config = generate_adtran_config(sorted_routes)
+
+print(adtran_config)
